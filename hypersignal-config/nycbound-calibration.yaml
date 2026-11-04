@@ -1,0 +1,45 @@
+# NYCbound Phase 4 calibration watchlist.
+# 20 companies pulled from the frozen 83-company CFO-pipeline batch (10 Qualified / 10 Disqualified,
+# per Phase 4 scope) so we can see how HyperSignal's signals compare against known-good and
+# known-bad leads before trusting it on the live pipeline.
+#
+# This is a `watchlist` (domain-first, Account Monitoring), not a `search` — we already know who
+# we're watching, we don't need keyword discovery.
+name: nycbound-calibration
+active: true
+kind: watchlist
+
+search:
+  orgDomains:
+    - sardine.ai          # Disqualified
+    - fermatcommerce.com  # Disqualified
+    - baseten.co          # Qualified
+    - unit.co             # Disqualified
+    - wordsmith.ai         # Qualified
+    - assemblyai.com      # Qualified
+    - akasa.com            # Qualified
+    - h1.com               # Qualified
+    - venn.com             # Disqualified
+    - standardbots.com    # Qualified
+    - air.inc              # Disqualified
+    - norm.ai              # Qualified
+    - polymarket.com      # Qualified
+    - icon.com             # Disqualified
+    - capitolis.com       # Disqualified
+    - stedi.com            # Disqualified
+    - tigerdata.com       # Disqualified
+    - poly.ai              # Disqualified
+    - growtherapy.com     # Qualified
+    - guidde.com           # Qualified
+  useAts: true    # also pull each domain's Greenhouse/Lever/Ashby/etc board directly (default, explicit here)
+
+# Not run by `npm run cycle` (that command only fetches jobs) — this field is read by our own
+# scripts/run-signals-once.mts, which is what actually triggers the 13 signal producers.
+refreshCron: "0 * * * *"   # unused: we drive this externally on our own schedule, not HyperSignal's internal one
+
+# The 12 free, no-key producers. (companieshouse is UK-only and needs an API key we haven't set up —
+# left out rather than included-and-silently-inert.)
+signals: ["velocity", "dns", "ats", "tech", "subdomains", "edgar", "apps", "news", "gdelt", "warn", "ph", "ads"]
+
+# No webhook: we run this as a one-shot daily process (no long-running server to receive a POST), so
+# scripts/run-signals-once.mts reads new rows straight out of data/signals.db after the run instead.
